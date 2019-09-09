@@ -1,0 +1,122 @@
+#!/bin/sh
+set -e
+
+help() {
+  cat <<EOF
+javae - "perl -e" for Java
+
+EOF
+  usage 0
+}
+
+usage() {
+  cat <<EOF
+usage: javae [options] [--] function [argument...]
+  -h, --help        Display this help message and quit
+  -d                Dump temporary Java source file and quit
+  -n                Execute for every line of input
+  -p                Execute for every line of input, and print the line afterwards
+EOF
+  exit "${1:-1}"
+}
+
+func=run
+dump=
+while getopts ":hdnp-:" opt; do
+  case "$opt" in
+    h)
+      help
+      ;;
+    d)
+      dump=1
+      ;;
+    n)
+      func=quietLoop
+      ;;
+    p)
+      func=printLoop
+      ;;
+    -)
+      # simulate GNU long options
+      case "$OPTARG" in
+        help)
+          help
+          ;;
+        *)
+          echo "unknown option: --$OPTARG" >&2
+          usage
+      ;;
+      esac
+      ;;
+    ?)
+      echo "unknown option: -$OPTARG" >&2
+      usage
+      ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+# Create temporary dir for Java source and class.
+# Make sure we delete it afterwards, no matter what.
+dir=
+cleanup() {
+  if [ -n "$dir" ]; then
+    rm -rf "$dir"
+  fi
+}
+trap cleanup EXIT
+# TODO: mktemp is not POSIX
+dir=$(mktemp -d)
+
+class=SCRIPT
+file="$dir/$class.java"
+cat >"$file" <<EOF
+public class $class {
+  private static String[] ARGV;
+  private static String LINE;
+  public static void main(String[] args) throws Exception {
+    ARGV = args;
+    $func();
+  }
+  public static void run() {
+    // BEGIN USER CODE =========================================================
+    $1
+    // END USER CODE ===========================================================
+  }
+  public static void printLoop() throws Exception {
+    loop(true);
+  }
+  public static void quietLoop() throws Exception {
+    loop(false);
+  }
+  public static void loop(boolean print) throws Exception {
+    try (java.io.BufferedReader in =
+           new java.io.BufferedReader(
+             new java.io.InputStreamReader(System.in))) {
+      while ((LINE = in.readLine()) != null) {
+        run();
+        if (print) {
+          println(LINE);
+        }
+      }
+    }
+  }
+  public static void print(Object it) {
+    System.out.print(it);
+  }
+  public static void println(Object it) {
+    System.out.println(it);
+  }
+  public static void printf(String fmt, Object... args) {
+    System.out.printf(fmt, args);
+  }
+}
+EOF
+
+if [ -n "$dump" ]; then
+  cat "$file"
+  exit
+fi
+
+javac "$file"
+java -cp "$dir" "$class"
