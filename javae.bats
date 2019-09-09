@@ -1,8 +1,5 @@
 #!/usr/bin/env bats
 
-# add javae to path
-PATH=../bin:$PATH
-
 # temporary directory for output
 dir=
 trap '[[ -n "$dir" ]] && rm -rf "$dir"' EXIT
@@ -17,26 +14,26 @@ assert_files() {
 }
 
 @test "print" {
-  javae 'print(1); print(2);' >"$actual"
+  ./javae 'print(1); print(2);' >"$actual"
   printf '12' >"$expected"
   assert_files
 }
 
 @test "println" {
-  javae 'println(1); println(2);' >"$actual"
+  ./javae 'println(1); println(2);' >"$actual"
   printf '1\n2\n' >"$expected"
   assert_files
 }
 
 @test "printf" {
-  javae 'printf("%.02f", 1d);' >"$actual"
+  ./javae 'printf("%.02f", 1d);' >"$actual"
   printf '1.00' >"$expected"
   assert_files
 }
 
 @test "-d" {
   # just assert the class and main, since we may add more helper methods
-  javae -d 'print("hello");' | head -n 4 >"$actual"
+  ./javae -d 'print("hello");' | head -n 4 >"$actual"
   cat >"$expected" <<EOF
 public class SCRIPT {
   private static String[] ARGV;
@@ -47,7 +44,7 @@ EOF
 }
 
 @test "-p empty" {
-  javae -p '' >"$actual" <<EOF
+  ./javae -p '' >"$actual" <<EOF
 1
 2
 3
@@ -61,7 +58,7 @@ EOF
 }
 
 @test "-p simple" {
-  javae -p 'LINE = LINE + "_";' >"$actual" <<EOF
+  ./javae -p 'LINE = LINE + "_";' >"$actual" <<EOF
 1
 2
 3
@@ -75,7 +72,7 @@ EOF
 }
 
 @test "-n empty" {
-  javae -n '' >"$actual" <<EOF
+  ./javae -n '' >"$actual" <<EOF
 1
 2
 3
@@ -85,7 +82,7 @@ EOF
 }
 
 @test "-n simple" {
-  javae -n 'if (!LINE.equals("2")) println(LINE);' >"$actual" <<EOF
+  ./javae -n 'if (!LINE.equals("2")) println(LINE);' >"$actual" <<EOF
 1
 2
 3
