@@ -15,7 +15,7 @@ usage: javae [options] [--] function [argument...]
   -h, --help        Display this help message and quit
   -d                Dump temporary Java source file and quit
   -n                Execute for every line of input
-  -p                Execute for every line of input, and print the line afterwards
+  -p                Like -n but with implicit println(LINE);
 EOF
   exit "${1:-1}"
 }
