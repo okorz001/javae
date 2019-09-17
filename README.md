@@ -45,6 +45,36 @@ $ printf '1\n2\n' | javae -p 'LINE += "a";'
 2a
 ```
 
+### Importing
+
+`-m CLASS` adds an import for `CLASS` to the generated source file.
+
+```sh
+$ javae -m java.time.Instant 'println(Instant.ofEpochMilli(0));'
+1970-01-01T00:00:00Z
+```
+
+`CLASS` may also be a wildcard. (Be careful of shell globbing.)
+
+```sh
+$ javae -m 'java.time.*' 'println(Instant.ofEpochMilli(0));'
+1970-01-01T00:00:00Z
+```
+
+`-M MEMBER` adds a static import for `MEMBER` to the generated source file.
+
+```sh
+$ javae -M java.time.Instant.ofEpochMilli 'println(ofEpochMilli(0));'
+1970-01-01T00:00:00Z
+```
+
+`MEMBER` may also be a wildcard. (Be careful of shell globbing.)
+
+```sh
+$ javae -M 'java.time.Instant.*' 'println(ofEpochMilli(0));'
+1970-01-01T00:00:00Z
+```
+
 ### Debugging
 
 `-d` dumps the generated Java source file and quits without executing it.

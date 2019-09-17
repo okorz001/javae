@@ -14,21 +14,34 @@ usage() {
 usage: javae [options] [--] function [argument...]
   -h, --help        Display this help message and quit
   -d                Dump temporary Java source file and quit
+  -m CLASS          Import CLASS (or wildcard) in the Java source file
+  -M MEMBER         Static import MEMBER (or wildcard) in the Java source file
   -n                Execute for every line of input
   -p                Like -n but with implicit println(LINE);
 EOF
   exit "${1:-1}"
 }
 
+# a single new line character: "\n"
+newline="
+"
+
 func=run
+import=
 dump=
-while getopts ":hdnp-:" opt; do
+while getopts ":hdm:M:np-:" opt; do
   case "$opt" in
     h)
       help
       ;;
     d)
       dump=1
+      ;;
+    m)
+      import="${import}import $OPTARG;$newline"
+      ;;
+    M)
+      import="${import}import static $OPTARG;$newline"
       ;;
     n)
       func=quietLoop
@@ -71,6 +84,7 @@ dir=$(mktemp -d)
 class=SCRIPT
 file="$dir/$class.java"
 cat >"$file" <<EOF
+$import
 public class $class {
   private static String[] ARGV;
   private static String LINE;

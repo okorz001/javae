@@ -33,8 +33,10 @@ assert_files() {
 
 @test "-d" {
   # just assert the class and main, since we may add more helper methods
-  ./javae -d 'print("hello");' | head -n 4 >"$actual"
+  ./javae -d 'print("hello");' | head -n 5 >"$actual"
+  # empty line from no imports
   cat >"$expected" <<EOF
+
 public class SCRIPT {
   private static String[] ARGV;
   private static String LINE;
@@ -91,5 +93,17 @@ EOF
 1
 3
 EOF
+  assert_files
+}
+
+@test "-m" {
+  ./javae -m'java.time.*' 'println(Instant.ofEpochMilli(0));' >"$actual"
+  echo '1970-01-01T00:00:00Z' >"$expected"
+  assert_files
+}
+
+@test "-M" {
+  ./javae -M'java.time.Instant.*' 'println(ofEpochMilli(0));' >"$actual"
+  echo '1970-01-01T00:00:00Z' >"$expected"
   assert_files
 }
