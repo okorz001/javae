@@ -26,9 +26,10 @@ EOF
 newline="
 "
 
-func=run
 import=
 dump=
+readLines=
+printLine=
 while getopts ":hdm:M:np-:" opt; do
   case "$opt" in
     h)
@@ -44,10 +45,12 @@ while getopts ":hdm:M:np-:" opt; do
       import="${import}import static $OPTARG;$newline"
       ;;
     n)
-      func=quietLoop
+      readLines=1
+      printLine=
       ;;
     p)
-      func=printLoop
+      readLines=1
+      printLine=1
       ;;
     -)
       # simulate GNU long options
@@ -81,39 +84,43 @@ trap cleanup EXIT
 # TODO: mktemp is not POSIX
 dir=$(mktemp -d)
 
+# pseudo-template with heredocs
 class=SCRIPT
 file="$dir/$class.java"
-cat >"$file" <<EOF
+cat /dev/null >"$file"
+if [ -n "$import" ]; then
+  cat >>"$file" <<EOF
 $import
+EOF
+fi
+cat >>"$file" <<EOF
 public class $class {
-  private static String[] ARGV;
-  private static String LINE;
-  public static void main(String[] args) throws Exception {
-    ARGV = args;
-    $func();
-  }
-  public static void run() {
-    // BEGIN USER CODE =========================================================
-    $1
-    // END USER CODE ===========================================================
-  }
-  public static void printLoop() throws Exception {
-    loop(true);
-  }
-  public static void quietLoop() throws Exception {
-    loop(false);
-  }
-  public static void loop(boolean print) throws Exception {
+  public static void main(String[] ARGV) throws Exception {
+EOF
+if [ -n "$readLines" ]; then
+  cat >>"$file" <<EOF
     try (java.io.BufferedReader in =
            new java.io.BufferedReader(
              new java.io.InputStreamReader(System.in))) {
+      String LINE;
       while ((LINE = in.readLine()) != null) {
-        run();
-        if (print) {
-          println(LINE);
-        }
+        $1
+EOF
+  if [ -n "$printLine" ]; then
+    cat >>"$file" <<EOF
+        println(LINE);
+EOF
+  fi
+  cat >>"$file" <<EOF
       }
     }
+EOF
+else
+  cat >>"$file" <<EOF
+    $1
+EOF
+fi
+cat >>"$file" <<EOF
   }
   public static void print(Object it) {
     System.out.print(it);
@@ -129,8 +136,7 @@ EOF
 
 if [ -n "$dump" ]; then
   cat "$file"
-  exit
+else
+  javac "$file"
+  java -cp "$dir" "$class"
 fi
-
-javac "$file"
-java -cp "$dir" "$class"

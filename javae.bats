@@ -34,15 +34,13 @@ assert_files() {
 @test "-d" {
   # just assert the class and main, since we may add more helper methods
   ./javae -d 'print("hello");' | head -n 5 >"$actual"
-  # empty line from no imports
-  cat >"$expected" <<EOF
-
-public class SCRIPT {
-  private static String[] ARGV;
-  private static String LINE;
-  public static void main(String[] args) throws Exception {
-EOF
-  assert_files
+  # inspect file contents without asserting entire content line-by-line
+  # basic class definition
+  grep -F 'public class SCRIPT' "$actual"
+  # basic main definition
+  grep -F 'public static void main(String[]' "$actual"
+  # our program
+  grep -F 'print("hello");' "$actual"
 }
 
 @test "-p empty" {
