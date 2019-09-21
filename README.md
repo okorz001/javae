@@ -45,7 +45,7 @@ $ printf '1\n2\n' | javae -p 'LINE += "a";'
 2a
 ```
 
-### Importing
+### Imports
 
 `-m CLASS` adds an import for `CLASS` to the generated source file.
 
@@ -60,6 +60,8 @@ $ javae -m java.time.Instant 'println(Instant.ofEpochMilli(0));'
 $ javae -m 'java.time.*' 'println(Instant.ofEpochMilli(0));'
 1970-01-01T00:00:00Z
 ```
+
+#### Static Imports
 
 `-M MEMBER` adds a static import for `MEMBER` to the generated source file.
 
