@@ -45,6 +45,34 @@ $ printf '1\n2\n' | javae -p 'LINE += "a";'
 2a
 ```
 
+#### Splitting Lines
+
+`-a` splits each line by whitespace. The fields are available in the String[]
+variables `FIELDS`.
+
+```sh
+$ printf '1 2\n3\t4\n5 \t 6' | javae -na 'println(FIELDS[1]);'
+2
+4
+6
+```
+
+`-F PATTERN` changes the regular expression used for splitting each line.
+`PATTERN` is subject to the same escape rules as String literals.
+
+```sh
+$ printf '1:2\n3::4\n5:6\n' | javae -naF: 'println(FIELDS[1]);'
+2
+
+6
+```
+```sh
+$ printf '1a2\n3bb4\n5foobar6\n' | javae -naF '\\D+' 'println(FIELDS[1]);'
+2
+4
+6
+```
+
 ### Imports
 
 `-m CLASS` adds an import for `CLASS` to the generated source file.

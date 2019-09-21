@@ -13,7 +13,9 @@ usage() {
   cat <<EOF
 usage: javae [options] [--] function [argument...]
   -h, --help        Display this help message and quit
+  -a                Split lines into fields (requires -n or -p)
   -d                Dump temporary Java source file and quit
+  -F PATTERN        Specifies the pattern for splitting fields (requires -a)
   -m CLASS          Import CLASS (or wildcard) in the Java source file
   -M MEMBER         Static import MEMBER (or wildcard) in the Java source file
   -n                Execute for every line of input
@@ -30,13 +32,21 @@ import=
 dump=
 readLines=
 printLine=
-while getopts ":hdm:M:np-:" opt; do
+splitLines=
+splitPattern='\\s+'
+while getopts ":hadF:m:M:np-:" opt; do
   case "$opt" in
     h)
       help
       ;;
+    a)
+      splitLines=1
+      ;;
     d)
       dump=1
+      ;;
+    F)
+      splitPattern="$OPTARG"
       ;;
     m)
       import="${import}import $OPTARG;$newline"
@@ -104,6 +114,13 @@ if [ -n "$readLines" ]; then
              new java.io.InputStreamReader(System.in))) {
       String LINE;
       while ((LINE = in.readLine()) != null) {
+EOF
+  if [ -n "$splitLines" ]; then
+    cat >>"$file" <<EOF
+        String[] FIELDS = LINE.split("${splitPattern}");
+EOF
+  fi
+  cat >>"$file" <<EOF
         $1
 EOF
   if [ -n "$printLine" ]; then

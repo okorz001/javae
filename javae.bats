@@ -94,6 +94,42 @@ EOF
   assert_files
 }
 
+@test "-a" {
+  ./javae -na 'println(FIELDS[1]);' >"$actual" <<EOF
+foo bar
+spam eggs
+EOF
+  cat >"$expected" <<EOF
+bar
+eggs
+EOF
+  assert_files
+}
+
+@test "-F" {
+  ./javae -naF: 'println(FIELDS[1]);' >"$actual" <<EOF
+foo:bar
+spam:eggs
+EOF
+  cat >"$expected" <<EOF
+bar
+eggs
+EOF
+  assert_files
+}
+
+@test "-F regex" {
+  ./javae -naF '\\d+' 'println(FIELDS[1]);' >"$actual" <<EOF
+foo123bar
+spam0eggs
+EOF
+  cat >"$expected" <<EOF
+bar
+eggs
+EOF
+  assert_files
+}
+
 @test "-m" {
   ./javae -m'java.time.*' 'println(Instant.ofEpochMilli(0));' >"$actual"
   echo '1970-01-01T00:00:00Z' >"$expected"
