@@ -1,0 +1,85 @@
+.TH JAVAE 1
+.SH NAME
+javae \- compile and execute one-line Java programs
+.SH SYNOPSIS
+.B javae
+[\fB\-adhnp\fR]
+[\fB\-F\fR \fIPATTERN\fR]
+[\fB\-m\fR \fICLASS\fR]
+[\fB\-M\fR \fIMEMBER\fR]
+.RS
+[\fIPROGRAM\fR]
+[\fIARGUMENTS\fR ...]
+.RE
+.SH DESCRIPTION
+\fBjavae\fR is a utility for compiling and running Java programs directly from
+the command line.
+It is heavily inspired by the \fB\-e\fR option of \fBperl\fR.
+.PP
+\fIPROGRAM\fR consists of zero or more Java statements.
+The statements are wrapped in a class definition similar to:
+.PP
+.nf
+.RS
+public class SCRIPT {
+  public static void main(String[] ARGV) throws Exception {
+    // PROGRAM goes here
+  }
+}
+.RE
+.fi
+.PP
+The generated class is immediately compiled and executed.
+.SS Pre-defined Variables
+\fBjavae\fR defines several variables that may be referenced in \fIPROGRAM\fR.
+.TP
+.I String[] ARGV
+The command line argument, \fIARGUMENTS\fR.
+.TP
+.I String LINE
+The current line. Only defined when \fB\-n\fR or \fB\-p\fR is used.
+.TP
+.I String[] FIELDS
+The fields of the current line. Only defined when \fB\-a\fR is used.
+.SH OPTIONS
+.TP
+.B \-a
+Enable autosplitting of lines.
+When used with \fB\-n\fR or \fB\-p\fR, the fields (parts) of the current line
+are available in the \fIFIELDS\fR variable which is of type \fIString[]\fR.
+By default, fields are split by whitespace.
+.TP
+.B \-d
+Dump the source of the generated class and exit without compiling.
+.TP
+.BR \-F " " \fIPATTERN\fR
+Change the pattern used for splitting with \fB\-a\fR.
+\fIPATTERN\fR is compiled with \fBjava.util.regex.Pattern.compile()\fR and
+must obey the same escaping rules as a \fIString\fR literal.
+.TP
+.B \-h
+Print a summary of the command line options and exit.
+.TP
+.BR \-m " " \fICLASS\fR
+Add an import for \fICLASS\fR.
+\fICLASS\fR may be a specific class or a wildcard.
+This option may be specified multiple times.
+.TP
+.BR \-M " " \fIMEMBER\fR
+Add a static import for \fIMEMBER\fR.
+\fIMEMBER\fR may be a specific member or a wildcard.
+This option may be specified multiple times.
+.TP
+.B \-n
+Execute the \fIPROGRAM\fR once for every line of input.
+The current line is available in the \fILINE\fR variable which is of type
+\fIString\fR.
+.TP
+.B \-p
+Execute the \fIPROGRAM\fR once for every line of input.
+The current line is available in the \fILINE\fR variable which is of type
+\fIString\fR.
+The \fILINE\fR variable is printed after the program is run, but before the
+next line is read.
+.SH SEE ALSO
+\fBjava\fR(1), \fBjavac\fR(1), \fBperl\fR(1), \fBperlrun\fR(1)
