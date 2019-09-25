@@ -11,10 +11,10 @@ clean:
 	rm -rf javae.html javae.tar.gz .dist
 
 html: javae.html
-# allow missing man2html
+# allow missing groff
 %.html: %.1
-	if which man2html >/dev/null; then \
-	  man ./$< | man2html >$@; \
+	if which groff >/dev/null; then \
+	  groff -Thtml -man $< >$@; \
 	fi
 
 check:

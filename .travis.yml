@@ -5,7 +5,8 @@ branches:
   only:
   - master
 install:
-- sudo apt-get install -y man2html-base
+# groff has a lot of recommended dependencies that are not needed for html
+- sudo apt-get install -y --no-install-recommends groff
 script:
 - make check
 - make dist
