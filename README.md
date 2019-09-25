@@ -31,6 +31,14 @@ $ make install
 $ make PREFIX=/opt/javae install
 ```
 
+`javae` consists of a single shell script, so you could also just download it directly:
+
+```sh
+$ cd /usr/local/bin # or wherever else you want to install
+$ curl -fLsSo javae https://raw.githubusercontent.com/okorz001/javae/master/javae &&
+  chmod a+x javae
+```
+
 ## Usage
 
 ```sh
