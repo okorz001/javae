@@ -33,12 +33,17 @@ $ make PREFIX=/opt/javae install
 
 ## Usage
 
+```sh
+$ javae 'println("Hello world!");'
+Hello world!
+```
+
 Options are briefly described in `javae -h`.
 
 For more comprehensive documentation, consult the man page: `man javae`.
 
 The man page for the latest successful build is hosted on GitHub Pages:
-http://okorz001.github.io/javae
+https://okorz001.github.io/javae
 
 ## Testing
 
