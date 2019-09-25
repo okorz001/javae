@@ -1,120 +1,51 @@
 # javae
 
-`perl -e` for Java
+compile and execute one-line Java programs
+
+[![Build Status](https://travis-ci.com/okorz001/javae.svg?branch=master)](https://travis-ci.com/okorz001/javae)
 
 ## Requirements
 
 * POSIX shell (`bash` specifically for test suite)
 * JDK 7+ (`java` and `javac`)
 
+## Installation
+
+With Homebrew:
+
+```sh
+$ brew tap okorz001/javae
+$ brew install javae --HEAD
+```
+
+From source with a local checkout:
+
+```sh
+$ make install
+```
+
+`make` will install to `/usr/local` by default. This can be changed with
+`PREFIX`:
+
+```sh
+$ make PREFIX=/opt/javae install
+```
+
 ## Usage
 
-`javae` is a utility for writing "one-liners" in Java. The provided function
-body is wrapped in a class and called by the class's `main` method.
+Options are briefly described in `javae -h`.
 
-```sh
-$ javae 'System.out.println(System.currentTimeMillis());'
-1568003592358
-```
+For more comprehensive documentation, consult the man page: `man javae`.
 
-Convenience methods `print`, `println` and `printf` are defined that forward
-to the same methods of `System.out`. The previous example can be shortened to:
-
-```sh
-$ javae 'println(System.currentTimeMillis());'
-1568003592358
-```
-
-### Processing Lines
-
-`-n` executes the function body once for every line of text in the input. The
-current line is available in the static (and mutable) String variable `LINE`.
-
-```sh
-$ printf '1\n2\n' | javae -n 'println(LINE + "a");'
-1a
-2a
-```
-
-`-p` is similar to `-n`, except that it implicitly adds `println(LINE);`
-after the function body. The previous example can be rewritten as:
-
-```sh
-$ printf '1\n2\n' | javae -p 'LINE += "a";'
-1a
-2a
-```
-
-#### Splitting Lines
-
-`-a` splits each line by whitespace. The fields are available in the String[]
-variables `FIELDS`.
-
-```sh
-$ printf '1 2\n3\t4\n5 \t 6' | javae -na 'println(FIELDS[1]);'
-2
-4
-6
-```
-
-`-F PATTERN` changes the regular expression used for splitting each line.
-`PATTERN` is subject to the same escape rules as String literals.
-
-```sh
-$ printf '1:2\n3::4\n5:6\n' | javae -naF: 'println(FIELDS[1]);'
-2
-
-6
-```
-```sh
-$ printf '1a2\n3bb4\n5foobar6\n' | javae -naF '\\D+' 'println(FIELDS[1]);'
-2
-4
-6
-```
-
-### Imports
-
-`-m CLASS` adds an import for `CLASS` to the generated source file.
-
-```sh
-$ javae -m java.time.Instant 'println(Instant.ofEpochMilli(0));'
-1970-01-01T00:00:00Z
-```
-
-`CLASS` may also be a wildcard. (Be careful of shell globbing.)
-
-```sh
-$ javae -m 'java.time.*' 'println(Instant.ofEpochMilli(0));'
-1970-01-01T00:00:00Z
-```
-
-#### Static Imports
-
-`-M MEMBER` adds a static import for `MEMBER` to the generated source file.
-
-```sh
-$ javae -M java.time.Instant.ofEpochMilli 'println(ofEpochMilli(0));'
-1970-01-01T00:00:00Z
-```
-
-`MEMBER` may also be a wildcard. (Be careful of shell globbing.)
-
-```sh
-$ javae -M 'java.time.Instant.*' 'println(ofEpochMilli(0));'
-1970-01-01T00:00:00Z
-```
-
-### Debugging
-
-`-d` dumps the generated Java source file and quits without executing it.
+The man page for the latest successful build is hosted on GitHub Pages:
+http://okorz001.github.io/javae
 
 ## Testing
 
 `javae` uses [Bats][bats] for testing. Bats requires Bash.
 
 ```sh
-$ bats javae.bats
+$ make check
 ```
 
 ## Rationale
