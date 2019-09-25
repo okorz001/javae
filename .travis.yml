@@ -4,6 +4,8 @@ jdk:
 branches:
   only:
   - master
+install:
+- sudo apt-get install -y man2html
 script:
 - make check
 - make dist
