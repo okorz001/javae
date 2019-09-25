@@ -5,7 +5,7 @@ branches:
   only:
   - master
 install:
-- sudo apt-get install -y man2html
+- sudo apt-get install -y man2html-base
 script:
 - make check
 - make dist
