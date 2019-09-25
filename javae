@@ -2,10 +2,6 @@
 set -e
 
 help() {
-  cat <<EOF
-javae - "perl -e" for Java
-
-EOF
   usage 0
 }
 
