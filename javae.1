@@ -30,56 +30,105 @@ public class SCRIPT {
 .fi
 .PP
 The generated class is immediately compiled and executed.
-.SS Pre-defined Variables
-\fBjavae\fR defines several variables that may be referenced in \fIPROGRAM\fR.
+.SS Pre-defined Variables and Methods
+\fBjavae\fR inserts several variables and methods into the generated class
+that may be referenced in \fIPROGRAM\fR.
 .TP
-.I String[] ARGV
-The command line argument, \fIARGUMENTS\fR.
+\fIString[]\fR \fBARGV\fR
+The command line arguments, \fIARGUMENTS\fR.
 .TP
-.I String LINE
-The current line. Only defined when \fB\-n\fR or \fB\-p\fR is used.
+\fIString\fR \fBLINE\fR
+The current line.
+.br
+Only defined when \fB\-n\fR or \fB\-p\fR is used.
 .TP
-.I String[] FIELDS
-The fields of the current line. Only defined when \fB\-a\fR is used.
+\fIString[]\fR \fBFIELDS\fR
+The fields of the current line.
+.br
+Only defined when \fB\-a\fR is used.
+.TP
+\fIvoid\fR \fBprint\fR(\fIObject it\fR)
+Convenience method that forwards to \fBSystem.out.print()\fR.
+.TP
+\fIvoid\fR \fBprintln\fR(\fIObject it\fR)
+Convenience method that forwards to \fBSystem.out.println()\fR.
+.TP
+\fIvoid\fR \fBprintf\fR(\fIString format\fR, \fIObject... args\fR)
+Convenience method that forwards to \fBSystem.out.printf()\fR.
 .SH OPTIONS
 .TP
-.B \-a
+\fB\-a\fR
 Enable autosplitting of lines.
 When used with \fB\-n\fR or \fB\-p\fR, the fields (parts) of the current line
-are available in the \fIFIELDS\fR variable which is of type \fIString[]\fR.
+are available in the \fBFIELDS\fR variable which is of type \fIString[]\fR.
 By default, fields are split by whitespace.
 .TP
-.B \-d
+\fB\-d\fR
 Dump the source of the generated class and exit without compiling.
 .TP
-.BR \-F " " \fIPATTERN\fR
+\fB\-F\fR \fIPATTERN\fR
 Change the pattern used for splitting with \fB\-a\fR.
 \fIPATTERN\fR is compiled with \fBjava.util.regex.Pattern.compile()\fR and
 must obey the same escaping rules as a \fIString\fR literal.
 .TP
-.B \-h
+\fB\-h\fR
 Print a summary of the command line options and exit.
 .TP
-.BR \-m " " \fICLASS\fR
+\fB\-m\fR \fICLASS\fR
 Add an import for \fICLASS\fR.
 \fICLASS\fR may be a specific class or a wildcard.
 This option may be specified multiple times.
 .TP
-.BR \-M " " \fIMEMBER\fR
+\fB\-M\fR \fIMEMBER\fR
 Add a static import for \fIMEMBER\fR.
 \fIMEMBER\fR may be a specific member or a wildcard.
 This option may be specified multiple times.
 .TP
-.B \-n
+\fB\-n\fR
 Execute the \fIPROGRAM\fR once for every line of input.
-The current line is available in the \fILINE\fR variable which is of type
+The current line is available in the \fBLINE\fR variable which is of type
 \fIString\fR.
 .TP
-.B \-p
+\fB\-p\fR
 Execute the \fIPROGRAM\fR once for every line of input.
-The current line is available in the \fILINE\fR variable which is of type
+The current line is available in the \fBLINE\fR variable which is of type
 \fIString\fR.
-The \fILINE\fR variable is printed after the program is run, but before the
+The \fBLINE\fR variable is printed after the program is run, but before the
 next line is read.
+.SH EXAMPLES
+Get the current Unix timestamp:
+.PP
+.nf
+.RS
+$ javae 'println(System.currentTimeMillis());'
+1568003592358
+.RE
+.fi
+.PP
+Get the current UTC timestamp:
+.PP
+.nf
+.RS
+$ javae -M java.time.Instant.* 'println(now());'
+2019-09-24T21:03:55.664Z
+.RE
+.fi
+.PP
+Get users with /bin/sh shell:
+.PP
+.nf
+.RS
+$ cat /etc/passwd | javae -naF: '
+    if (FIELDS.length >= 7 &&
+        FIELDS[6].equals("/bin/sh"))
+      println(FIELDS[0]);'
+root
+.RE
+.fi
 .SH SEE ALSO
 \fBjava\fR(1), \fBjavac\fR(1), \fBperl\fR(1), \fBperlrun\fR(1)
+.PP
+Repository:
+.RS
+https://github.com/okorz001/javae
+.RE
