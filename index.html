@@ -1,0 +1,286 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Fri Sep 27 03:21:04 2019 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>JAVAE</title>
+
+</head>
+<body>
+
+<h1 align="center">JAVAE</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">javae &minus;
+compile and execute one-line Java programs</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>javae</b>
+[<b>&minus;adhnp</b>] [<b>&minus;F</b> <i>PATTERN</i>]
+[<b>&minus;m</b> <i>CLASS</i>] [<b>&minus;M</b>
+<i>MEMBER</i>]</p>
+
+<p style="margin-left:22%;">[<i>PROGRAM</i>]
+[<i>ARGUMENTS</i> ...]</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>javae</b> is
+a utility for compiling and running Java programs directly
+from the command line. It is heavily inspired by the
+<b>&minus;e</b> option of <b>perl</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>PROGRAM</i>
+consists of zero or more Java statements. The statements are
+wrapped in a class definition similar to:</p>
+
+<p style="margin-left:22%; margin-top: 1em">public class
+SCRIPT { <br>
+public static void main(String[] ARGV) throws Exception {
+<br>
+// PROGRAM goes here <br>
+} <br>
+}</p>
+
+<p style="margin-left:11%; margin-top: 1em">The generated
+class is immediately compiled and executed.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Pre-defined
+Variables and Methods <br>
+javae</b> inserts several variables and methods into the
+generated class that may be referenced in <i>PROGRAM</i>.
+<i><br>
+String[]</i> <b>ARGV</b></p>
+
+<p style="margin-left:22%;">The command line arguments,
+<i>ARGUMENTS</i>.</p>
+
+<p style="margin-left:11%;"><i>String</i> <b>FILE</b></p>
+
+<p style="margin-left:22%;">The name of the current file,
+or &quot;-&quot; for <b>System.in</b>. Only defined when
+<b>&minus;n</b> or <b>&minus;p</b> is used.</p>
+
+<p style="margin-left:11%;"><i>String</i> <b>LINE</b></p>
+
+<p style="margin-left:22%;">The current line. Only defined
+when <b>&minus;n</b> or <b>&minus;p</b> is used.</p>
+
+<p style="margin-left:11%;"><i>String[]</i>
+<b>FIELDS</b></p>
+
+<p style="margin-left:22%;">The fields of the current line.
+Only defined when <b>&minus;a</b> is used.</p>
+
+<p style="margin-left:11%;"><i>void</i>
+<b>print</b>(<i>Object it</i>)</p>
+
+<p style="margin-left:22%;">Convenience method that
+forwards to <b>System.out.print()</b>.</p>
+
+<p style="margin-left:11%;"><i>void</i>
+<b>println</b>(<i>Object it</i>)</p>
+
+<p style="margin-left:22%;">Convenience method that
+forwards to <b>System.out.println()</b>.</p>
+
+<p style="margin-left:11%;"><i>void</i>
+<b>printf</b>(<i>String format</i>, <i>Object...
+args</i>)</p>
+
+<p style="margin-left:22%;">Convenience method that
+forwards to <b>System.out.printf()</b>.</p>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em"><b>&minus;a</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em">Enable autosplitting of lines.
+When used with <b>&minus;n</b> or <b>&minus;p</b>, the
+fields (parts) of the current line are available in the
+<b>FIELDS</b> variable which is of type <i>String[]</i>. By
+default, fields are split by whitespace.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;d</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Dump the source of the generated class and exit without
+compiling.</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>&minus;F</b>
+<i>PATTERN</i></p>
+
+<p style="margin-left:22%;">Change the pattern used for
+splitting with <b>&minus;a</b>. <i>PATTERN</i> is compiled
+with <b>java.util.regex.Pattern.compile()</b> and must obey
+the same escaping rules as a <i>String</i> literal.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;h</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Print a summary of the command line options and
+exit.</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>&minus;m</b>
+<i>CLASS</i></p>
+
+<p style="margin-left:22%;">Add an import for <i>CLASS</i>.
+<i>CLASS</i> may be a specific class or a wildcard. This
+option may be specified multiple times.</p>
+
+<p style="margin-left:11%;"><b>&minus;M</b>
+<i>MEMBER</i></p>
+
+<p style="margin-left:22%;">Add a static import for
+<i>MEMBER</i>. <i>MEMBER</i> may be a specific member or a
+wildcard. This option may be specified multiple times.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>&minus;n</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Execute the <i>PROGRAM</i> once for every line of input.
+If <i>ARGUMENTS</i> are provided, then they are interpreted
+as filenames and each file is read and processed in order.
+Otherwise, lines are read from <b>System.in</b>. The special
+filename &quot;-&quot; can be used to explicitly refer to
+<b>System.in</b> in <i>ARGUMENTS</i>.</p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">The current
+filename is available in the <b>FILE</b> variable which is
+of type <i>String</i>. The current line is available in the
+<b>LINE</b> variable which is of type <i>String</i>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p style="margin-top: 1em"><b>&minus;p</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em">Like <b>-n</b>, but appends an
+implicit &quot;println(LINE);&quot; to <i>PROGRAM</i>.</p></td></tr>
+</table>
+
+<h2>EXAMPLES
+<a name="EXAMPLES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Get the current
+Unix timestamp:</p>
+
+<p style="margin-left:22%; margin-top: 1em">$ javae
+&rsquo;println(System.currentTimeMillis());&rsquo; <br>
+1568003592358</p>
+
+<p style="margin-left:11%; margin-top: 1em">Get the current
+UTC timestamp:</p>
+
+<p style="margin-left:22%; margin-top: 1em">$ javae -M
+java.time.Instant.* &rsquo;println(now());&rsquo; <br>
+2019-09-24T21:03:55.664Z</p>
+
+<p style="margin-left:11%; margin-top: 1em">Get users with
+/bin/sh shell:</p>
+
+<p style="margin-left:22%; margin-top: 1em">$ javae -naF: \
+<br>
+&rsquo;if (FIELDS.length &gt;= 7 &amp;&amp; <br>
+FIELDS[6].equals(&quot;/bin/sh&quot;)) <br>
+println(FIELDS[0]);&rsquo; \ <br>
+/etc/passwd <br>
+root</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>java</b>(1),
+<b>javac</b>(1), <b>perl</b>(1), <b>perlrun</b>(1)</p>
+
+
+<p style="margin-left:11%; margin-top: 1em">Repository:</p>
+
+
+<p style="margin-left:22%;">https://github.com/okorz001/javae</p>
+<hr>
+</body>
+</html>
