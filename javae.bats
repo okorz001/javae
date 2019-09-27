@@ -71,6 +71,88 @@ EOF
   assert_files
 }
 
+@test "-p file" {
+  cat >"$dir/1" <<EOF
+1
+2
+3
+EOF
+  ./javae -p '' "$dir/1" </dev/null >"$actual"
+  cat >"$expected" <<EOF
+1
+2
+3
+EOF
+  assert_files
+}
+
+@test "-p files" {
+  cat >"$dir/1" <<EOF
+1
+2
+3
+EOF
+  cat >"$dir/2" <<EOF
+4
+5
+6
+EOF
+  ./javae -p '' "$dir/1" "$dir/2" </dev/null >"$actual"
+  cat >"$expected" <<EOF
+1
+2
+3
+4
+5
+6
+EOF
+  assert_files
+}
+
+@test "-p -" {
+  ./javae -p '' - >"$actual" <<EOF
+1
+2
+3
+EOF
+  cat >"$expected" <<EOF
+1
+2
+3
+EOF
+  assert_files
+}
+
+@test "-p - and files" {
+  cat >"$dir/1" <<EOF
+1
+2
+3
+EOF
+  cat >"$dir/2" <<EOF
+7
+8
+9
+EOF
+  ./javae -p '' "$dir/1" - "$dir/2" >"$actual" <<EOF
+4
+5
+6
+EOF
+  cat >"$expected" <<EOF
+1
+2
+3
+4
+5
+6
+7
+8
+9
+EOF
+  assert_files
+}
+
 @test "-n empty" {
   ./javae -n '' >"$actual" <<EOF
 1

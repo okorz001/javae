@@ -37,14 +37,16 @@ that may be referenced in \fIPROGRAM\fR.
 \fIString[]\fR \fBARGV\fR
 The command line arguments, \fIARGUMENTS\fR.
 .TP
+\fIString\fR \fBFILE\fR
+The name of the current file, or "-" for \fBSystem.in\fR.
+Only defined when \fB\-n\fR or \fB\-p\fR is used.
+.TP
 \fIString\fR \fBLINE\fR
 The current line.
-.br
 Only defined when \fB\-n\fR or \fB\-p\fR is used.
 .TP
 \fIString[]\fR \fBFIELDS\fR
 The fields of the current line.
-.br
 Only defined when \fB\-a\fR is used.
 .TP
 \fIvoid\fR \fBprint\fR(\fIObject it\fR)
@@ -86,15 +88,21 @@ This option may be specified multiple times.
 .TP
 \fB\-n\fR
 Execute the \fIPROGRAM\fR once for every line of input.
+If \fIARGUMENTS\fR are provided, then they are interpreted as filenames and
+each file is read and processed in order.
+Otherwise, lines are read from \fBSystem.in\fR.
+The special filename "-" can be used to explicitly refer to \fBSystem.in\fR
+in \fIARGUMENTS\fR.
+.br
+
+.br
+The current filename is available in the \fBFILE\fR variable which is of type
+\fIString\fR.
 The current line is available in the \fBLINE\fR variable which is of type
 \fIString\fR.
 .TP
 \fB\-p\fR
-Execute the \fIPROGRAM\fR once for every line of input.
-The current line is available in the \fBLINE\fR variable which is of type
-\fIString\fR.
-The \fBLINE\fR variable is printed after the program is run, but before the
-next line is read.
+Like \fB-n\fR, but appends an implicit "println(LINE);" to \fIPROGRAM\fR.
 .SH EXAMPLES
 Get the current Unix timestamp:
 .PP
@@ -118,10 +126,11 @@ Get users with /bin/sh shell:
 .PP
 .nf
 .RS
-$ cat /etc/passwd | javae -naF: '
-    if (FIELDS.length >= 7 &&
-        FIELDS[6].equals("/bin/sh"))
-      println(FIELDS[0]);'
+$ javae -naF: \\
+    'if (FIELDS.length >= 7 &&
+         FIELDS[6].equals("/bin/sh"))
+       println(FIELDS[0]);' \\
+    /etc/passwd
 root
 .RE
 .fi

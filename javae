@@ -78,6 +78,10 @@ while getopts ":hadF:m:M:np-:" opt; do
 done
 shift $((OPTIND - 1))
 
+# first argument after options is the program
+program="$1"
+shift
+
 # Create temporary dir for Java source and class.
 # Make sure we delete it afterwards, no matter what.
 dir=
@@ -105,32 +109,37 @@ public class $class {
 EOF
 if [ -n "$readLines" ]; then
   cat >>"$file" <<EOF
-    try (java.io.BufferedReader in =
-           new java.io.BufferedReader(
-             new java.io.InputStreamReader(System.in))) {
-      String LINE;
-      while ((LINE = in.readLine()) != null) {
+    for (String FILE : ARGV.length > 0 ? ARGV : new String[] { "-" }) {
+      try (java.io.BufferedReader in =
+             new java.io.BufferedReader(
+               new java.io.InputStreamReader(
+                 "-".equals(FILE) ?
+                   System.in :
+                   new java.io.FileInputStream(FILE)))) {
+        String LINE;
+        while ((LINE = in.readLine()) != null) {
 EOF
   if [ -n "$splitLines" ]; then
     cat >>"$file" <<EOF
-        String[] FIELDS = LINE.split("${splitPattern}");
+          String[] FIELDS = LINE.split("${splitPattern}");
 EOF
   fi
   cat >>"$file" <<EOF
-        $1
+          $program
 EOF
   if [ -n "$printLine" ]; then
     cat >>"$file" <<EOF
-        println(LINE);
+          println(LINE);
 EOF
   fi
   cat >>"$file" <<EOF
+        }
       }
     }
 EOF
 else
   cat >>"$file" <<EOF
-    $1
+    $program
 EOF
 fi
 cat >>"$file" <<EOF
@@ -151,5 +160,6 @@ if [ -n "$dump" ]; then
   cat "$file"
 else
   javac "$file"
-  java -cp "$dir" "$class"
+  # pass remaining arguments to program
+  java -cp "$dir" "$class" "$@"
 fi
